@@ -1,0 +1,128 @@
+uniform float4x4 ViewProj;
+uniform texture2d image;
+
+uniform float bulge_scale;
+uniform float bulge_radius;
+uniform float bulge_center_x_norm;
+uniform float bulge_center_y_norm;
+uniform bool bulge_radius_length_shorter_side;
+uniform bool bulge_show_lens_border;
+uniform bool bulge_show_lens_center;
+uniform float texture_width;
+uniform float texture_height;
+
+sampler_state def_sampler {
+	Filter   = Linear;
+	AddressU = Clamp;
+	AddressV = Clamp;
+};
+
+// Vertex data 
+struct VertData {
+	float4 pos : POSITION;
+	float2 uv  : TEXCOORD0;
+};
+
+// Vertex Shader
+VertData VSDefault(VertData vert_in)
+{
+	VertData vert_out;
+	vert_out.pos = mul(float4(vert_in.pos.xyz, 1.0), ViewProj);
+	vert_out.uv  = vert_in.uv;
+	return vert_out;
+}
+
+// Pixel Shader
+float4 PSDrawBare(VertData vert_in) : TARGET
+{
+	const float PI = 3.141592653589793238;
+	// Radius of the lens (normalized)
+	float lens_radius_norm = bulge_radius;
+	
+	// Aspect ratio of the texture
+	float texture_ratio = texture_width / texture_height;
+	
+	// Center of the filter lens in actual coordinates of the texture's dimensions
+    float2 lens_center_pos = float2(bulge_center_x_norm * texture_width, bulge_center_y_norm * texture_height);
+		
+	// Texture coordinates (uv coordinates are normalized to be between 0 and 1)
+	float2 uv = vert_in.uv;
+	// Convert to actual coordinates in the texture's dimensions
+	uv = float2(uv.x * texture_width, uv.y * texture_height);
+	
+	/* Subtracting coordinates of the vector pointing to the center of the lens from the coordinates of the vector pointing to UV,  
+	to get coordinates of a vector, whose magnitude is the distance between the current pixel and the center of the lens */
+	float2 d = uv - lens_center_pos;
+	
+	// Calculate magnitude of that vector (distance between the current pixel and the center of the lens)
+	float d_len = length(d); //sqrt(dot(d, d));
+	// Radius of the lens (actual)
+	float lens_radius = 0;
+	// Account for texture's aspect ratio and base the radius on length of the shorter or longer side
+	if (texture_ratio < 1) {
+		if (bulge_radius_length_shorter_side) {
+			lens_radius = lens_radius_norm * texture_width;
+		} else lens_radius = lens_radius_norm * texture_height;
+	} else {
+		if (bulge_radius_length_shorter_side) {
+			lens_radius = lens_radius_norm * texture_height;
+		} else lens_radius = lens_radius_norm * texture_width;
+	}
+	
+	// Bulge/Pinch lens
+	if (d_len < lens_radius) {
+		// Convert to polar coordinates of sorts (distance and angle) 
+		/* Ratio, how far the current input image pixel is positioned along the lens radius
+		(subtracting the ratio from 1.0 because in this particular script 
+		we need to be moving in the inwards direction, from lens border to the image center) */
+		float r = 1.0 - ((d_len + 0.00001) / lens_radius);
+		
+		/* Angle between the vector pointing to the pixel and the x-axis
+		required to preserve vector direction in calculations */
+		float a = atan2(d.y, d.x);
+		
+		/* Most important line 
+		adding 1.0 to semlessly fit the distorted (scaled) portions to the rest of the image (scale 1).
+		equation -(cos(PI * r) - 1.0) / 2.0 is an easing function "easeInOutSine", 
+		which controls the change of scaling at every point along the lens radius */
+		float rn = 1.0/(1.0 + (bulge_scale - 1.0) * -(cos(PI * r) - 1.0) / 2.0);
+		
+		/* Trig functions set the direction based on the angle (a),
+		d_len is scaled, based on the new ratio (rn),
+		add all that to lens center coordinates
+		convert back to Cartesian coordinates */
+		d.x = rn*d_len*cos(a); 
+		d.y = rn*d_len*sin(a);
+		uv = (lens_center_pos + d);
+	}
+	
+	// Convert back to normalized coordinates
+	uv = float2(uv.x / texture_width, uv.y / texture_height);
+	
+	// Draw border of the lens for debug purposes
+	if (bulge_show_lens_border) {
+		if (d_len > lens_radius - 3.0 && d_len < lens_radius) {
+			// Opacity 0.7 (70%)
+			float4 lens_border_color = lerp(image.Sample(def_sampler, uv), float4(1.0,0.0,0.0,1.0), 0.7);
+			return lens_border_color;
+		}
+	}
+	
+	// Draw center of the lens for debug purposes
+	if (bulge_show_lens_center) {
+		if (d_len < 3.0) {
+			return float4(1.0,0.0,0.0,1.0);
+		}
+	}
+	
+	return image.Sample(def_sampler, uv);
+}
+
+technique Draw
+{
+	pass
+	{
+		vertex_shader = VSDefault(vert_in);
+		pixel_shader  = PSDrawBare(vert_in);
+	}
+}
