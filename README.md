@@ -1,3 +1,39 @@
 ## Description
-Shader-based Bulge/Dent lens filter for OBS. <br/>
-Lens position can be changed via hotkeys.
+Shader-based Bulge/Dent lens filter for OBS.<br/>
+Lens position can be changed via hotkeys.<br/>
+
+## Settings
+<ul>
+<li>For "Dent" effect, set "Scale" to a value less than 1</li>
+<li>For "Bulge" effect, set "Scale to a value greater than 1</li>
+<li>The lens radius is a normalized value, based on side length.<br/>
+Which side it is, depends on the "Base the radius on length of the shorter side" checkbox, which is ON by default.<br/>
+When it's ON, it effectively means that the lens, when positioned in the middle of the source, is inscribed in the source rectangle at "max" radius of 0.5<br/> 
+(well, technically, the maximum radius value is indeed 0.5, because it's 1/2 of the side, but it can be set to 1.0 so that it stretches outside the image, if needs be).</li>  
+<li>"Show lens border" and "Show lens center" checkmarks (OFF by default) help in positioning the lens more precisely.</li>
+</ul>
+
+The filter, upon being added to a source, registers hotkeys for three positions (center, top, bottom right), the position changes upon hotkey press. 
+For the hotkeys to work, they need to be set to the desired key combinations in OBS settings. 
+[File -> Settings -> Hotkeys]
+
+## How to install
+<ol>
+<li>Copy the "obs-bulge-dent-lens-filter-hotkeys-positions.lua" script file to the desired location.<br/>
+It is safe to ignore the "bulge-dent-lens-filter.effect" shader file, its contents are already embedded into the lua script.</li>
+<li>Load the script in OBS via [Tools -> Scripts -> "+" button]</li>
+<li>Add the filter to the desired source. The filter's default name is "Bulge/Dent lens filter (with hotkeys for positions)". The name can be edited if needed, in the lua script at the top there's the setting
+<code>TEXT_FILTER_NAME = 'Bulge/Dent lens filter (with hotkeys for positions)'</code></li>
+</ol>
+
+#### About hotkey-activated positions:
+Play around with the filter and see which values  of "Scale", "Lens center X" and "Lens center Y" you want for each lens position, then replace the <code>bulge_scale</code>, <code>bulge_radius</code>, <code>bulge_center_x_norm</code> and <code>bulge_center_y_norm</code> values in the <code>filter.bulge_positions</code> table of the script with those values of yours.</br>
+After being done with editing the script file, <strong>don't forget to save the changes!!!</strong>
+
+## Making the changes to the script come into action
+<p><strong>Updating the script via the dedicated button in the scripts window is not well tested</strong>, so instead it might be preferrable to just remove the filter from the source, then delete the script from OBS  [Tools -> Scripts -> "trash bin" button]. </br> 
+Optionally restart OBS (never hurts to do that), then add the script and the filter back in as usual.</br>
+
+<strong>Important!!!</strong> after setting the hotkeys in the OBS settings, upon pressing a hotkey combination <strong>the change of the current fisheye filter settings won't be reflected in the UI</strong>.</p>
+However, the actual settings themselves shall change successfully, regardless of the state of the UI, and <strong>that change will be reflected in the preview window</strong>. 
+
