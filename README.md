@@ -26,7 +26,7 @@ It is safe to ignore the "bulge-dent-lens-filter.effect" shader file, its conten
 <code>TEXT_FILTER_NAME = 'Bulge/Dent lens filter (with hotkeys for positions)'</code></li>
 </ol>
 
-#### About hotkey-activated positions:
+### About hotkey-activated positions:
 Play around with the filter and see which values  of "Scale", "Lens center X" and "Lens center Y" you want for each lens position, then replace the <code>bulge_scale</code>, <code>bulge_radius</code>, <code>bulge_center_x_norm</code> and <code>bulge_center_y_norm</code> values in the <code>filter.bulge_positions</code> table of the script with those values of yours.</br>
 After being done with editing the script file, <strong>don't forget to save the changes!!!</strong>
 
