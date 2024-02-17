@@ -37,3 +37,13 @@ Optionally restart OBS (never hurts to do that), then add the script and the fil
 <strong>Important!!!</strong> after setting the hotkeys in the OBS settings, upon pressing a hotkey combination <strong>the change of the current fisheye filter settings won't be reflected in the UI</strong>.</p>
 However, the actual settings themselves shall change successfully, regardless of the state of the UI, and <strong>that change will be reflected in the preview window</strong>. 
 
+## Using "Bulge" and "Dent" as separate filters
+To have more than one filter working at the same time, so that it would be possible able to toggle them on and off as separate filters, here is how to do it:
+<ol>
+<li>Make two copies of the lua script file, give the copies unique names, e.g. replace the "bulge-dent" part with "bulge" and "dent" respectively</li>
+<li>Inside the scripts edit the <code>TEXT_FILTER_NAME</code> variable so that its value would be unique for each script, e.g. replace the "Bulge/Dent" part with "Bulge" and "Dent" respectively (so that it would be possible to tell them apart in the "Filters" window)</li>
+<li>Edit the source_info.id variable in a unique way too, e.g. 'filter-bulge-lens' and 'filter-dent-lens' respectively</li>  
+</ol>
+
+The <code>'htk_name'</code> variables could also be renamed uniquely too, so that the "Hotkeys" window won't have 2 of the same sets of hotkey names, but it can be safely ignored, as it is possible to just assign both sets of hotkeys the same combinations.
+The OBS is going to complain (with a little yellow "alert" sign next to the hotkey combinations in the hotkey settings window) about them being assigned the same combinations, but it should still work perfectly fine.
