@@ -45,5 +45,5 @@ To have more than one filter working at the same time, so that it would be possi
 <li>Edit the source_info.id variable in a unique way too, e.g. 'filter-bulge-lens' and 'filter-dent-lens' respectively</li>  
 </ol>
 
-The <code>'htk_name'</code> variables could also be renamed uniquely too, so that the "Hotkeys" window won't have 2 of the same sets of hotkey names, but it can be safely ignored, as it is possible to just assign both sets of hotkeys the same combinations.
+The <code>htk_name</code> variables could also be renamed uniquely too, so that the "Hotkeys" window won't have 2 of the same sets of hotkey names, but it can be safely ignored, as it is possible to just assign both sets of hotkeys the same combinations.
 The OBS is going to complain (with a little yellow "alert" sign next to the hotkey combinations in the hotkey settings window) about them being assigned the same combinations, but it should still work perfectly fine.
