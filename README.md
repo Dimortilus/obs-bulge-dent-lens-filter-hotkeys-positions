@@ -4,7 +4,7 @@ Lens position can be changed via hotkeys.<br/>
 
 ## Settings
 <ul>
-<li>For "Bulge" effect, set "Scale to a value greater than 1</li>
+<li>For "Bulge" effect, set "Scale" to a value greater than 1</li>
 <li>For "Dent" effect, set "Scale" to a value less than 1</li>
 <li>The lens radius is a normalized value, based on side length.<br/>
 Which side it is, depends on the "Base the radius on length of the shorter side" checkbox, which is ON by default.<br/>
